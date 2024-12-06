@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "CLI tool for file operations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start-calculator": "node projects/calculator.js",
+    "start-fileManager": "node projects/fileManager.js"
+  },
+  "keywords": [
+    "nodejs",
+    "learning",
+    "projects"
+  ],
+  "author": "bhati",
+  "license": "ISC"
+}
