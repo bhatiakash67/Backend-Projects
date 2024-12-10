@@ -77,6 +77,8 @@ async function fileOperations() {
                 }
                 break;
             case 'help':
+                displayHelp()
+                break;
             default:
                 displayHelp()
                 break;
