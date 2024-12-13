@@ -49,15 +49,20 @@ const server = http.createServer((req, res) => {
             req.on('end', () => {
                 const updatedNote = JSON.parse(body)
                 const index = notes.findIndex(n => n.id === noteId)
-                if (index === -1) {
-                    res.writeHead(404, { "Content-Type": "text/plain" })
-                    res.end("Note. not found.")
-                    return
 
+                if (index === -1) {
+                    // create a new note if no note with specified id found 
+                    updatedNote.id = noteId
+                    notes.push(updatedNote)
+                    res.writeHead(201, { "Content-Type": "application/json" })
+                    res.end(JSON.stringify(updatedNote))
                 }
-                notes[index] = { ...notes[index], ...updatedNote }
-                res.writeHead(200, { "Content-Type": "application/json" })
-                res.end(JSON.stringify(notes[index]))
+                else {
+                    // replace the whole note for id match
+                    notes[index] = updatedNote
+                    res.writeHead(200, { "Content-Type": "application/json" })
+                    res.end(JSON.stringify(notes[index]))
+                }
             })
         }
         else if (method === 'DELETE') {
