@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start-calculator": "node projects/calculator.js",
-    "start-fileOperations": "node projects/fileOperationsCLI.js"
+    "start-calculator": "node projects/cli/calculator.js",
+    "start-fileOperations": "node projects/cli/fileOperationsCLI.js"
   },
   "keywords": [
     "nodejs",
@@ -14,5 +14,8 @@
     "projects"
   ],
   "author": "bhati",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
