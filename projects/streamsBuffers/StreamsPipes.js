@@ -13,6 +13,7 @@ const writableStream = fs.createWriteStream("../files/file2.txt", {
 readableStream.on("data", (chunkOfData) => {
     // buffer size is chunk.length
     console.log("Buffer size:",chunkOfData.length);
+    console.log(chunkOfData)
     writableStream.write(chunkOfData) //Write chunk to writable stream
 })
 

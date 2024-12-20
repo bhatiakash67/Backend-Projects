@@ -44,21 +44,24 @@ app.get("/products/:id", (req, res) => {
     if (product) {
         res.json(product)
     } else {
-        res.status(404).send("No such product exists")
+        res.status(404).json({
+            error: "No such product exists.",
+            productId: productId
+        })
     }
 })
-// full update the product
+// fully update the product
 app.put("/products/:id", (req, res) => {
     const productId = parseInt(req.params.id)
     const { productName, price } = req.body
     if (!productName || !price) {
-        return res.status(400).send("All the fields are required for full update.")
+        return res.status(400).json({
+            error: "All the fields are required to replace the resource."
+        })
     }
 
     const productIndex = products.findIndex(p => p.id === productId)
-
     if (productIndex === -1) {
-
         // Not to create a new product if not found
         // res.status(404).json({
         //     error: "Product not found.",
@@ -75,6 +78,7 @@ app.put("/products/:id", (req, res) => {
         return res.status(201).json(newProduct)
     }
 
+    // replace the product with new info if it exists
     const updatedProduct = {
         id: productId,
         productName,
@@ -90,7 +94,7 @@ app.patch("/products/:id", (req, res) => {
     const receivedProduct = req.body
 
     if (Object.keys(receivedProduct).length === 0) {
-        res.status(400).json({
+        return res.status(400).json({
             error: "Request body cannot be empty.",
             message: "Provide field to update."
         })
@@ -99,12 +103,15 @@ app.patch("/products/:id", (req, res) => {
     const productIndex = products.findIndex(p => p.id === productId)
 
     if (productIndex === -1) {
-        res.status(404).send(`Product not found.`)
+        return res.status(404).json({
+            error: "Product not found to update.",
+            productId: productId
+        })
     }
 
     const updatedProduct = { ...products[productIndex], ...receivedProduct }
     products[productIndex] = updatedProduct
-    res.status(200).json(updatedProduct)
+    return res.status(200).json(updatedProduct)
 })
 
 app.delete("/products/:id", (req, res) => {
@@ -115,7 +122,9 @@ app.delete("/products/:id", (req, res) => {
         res.status(204).send()
     }
     else {
-        res.status(404).send("Product not found.")
+        res.status(404).send({
+            error: "Product not found."
+        })
     }
 })
 

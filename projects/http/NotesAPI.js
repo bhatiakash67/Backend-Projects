@@ -22,6 +22,11 @@ const server = http.createServer((req, res) => {
             })
             req.on('end', () => {
                 const newNote = JSON.parse(body)
+                const { title, content } = newNote
+                if (!title || !content) {
+                    res.writeHead(400, { "Content-Type": "text/plain" })
+                    return res.end("Both the fields are required to replace the old note.")
+                }
                 newNote.id = notes.length + 1
                 notes.push(newNote)
                 res.writeHead(201, { "Content-Type": "application/json" })
@@ -34,7 +39,7 @@ const server = http.createServer((req, res) => {
             const note = notes.find(n => n.id === noteId)
             if (note) {
                 res.writeHead(200, { "Content-Type": "application/json" })
-                res.end(JSON.stringify(note))
+                return res.end(JSON.stringify(note))
             }
             else {
                 res.writeHead(404, { "Content-Type": "text/plain" })
@@ -51,14 +56,21 @@ const server = http.createServer((req, res) => {
                 const index = notes.findIndex(n => n.id === noteId)
 
                 if (index === -1) {
+                    // no such note exists to replace
+                    res.writeHead(404, { "Content-Type": "application/json" })
+                    res.end(JSON.stringify({
+                        error: "No such note exists to replace",
+                        noteId: noteId
+                    }))
                     // create a new note if no note with specified id found 
-                    updatedNote.id = noteId
-                    notes.push(updatedNote)
-                    res.writeHead(201, { "Content-Type": "application/json" })
-                    res.end(JSON.stringify(updatedNote))
+                    // updatedNote.id = noteId
+                    // notes.push(updatedNote)
+                    // res.writeHead(201, { "Content-Type": "application/json" })
+                    // res.end(JSON.stringify(updatedNote))
                 }
                 else {
                     // replace the whole note for id match
+                    updatedNote.id = noteId
                     notes[index] = updatedNote
                     res.writeHead(200, { "Content-Type": "application/json" })
                     res.end(JSON.stringify(notes[index]))

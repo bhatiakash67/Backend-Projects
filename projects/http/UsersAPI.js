@@ -12,7 +12,7 @@ const users = [
 const server = http.createServer((req, res) => {
     const { pathname, query } = url.parse(req.url, true)
     const method = req.method
-    
+
     if (pathname == '/users') {
         if (method === 'GET') {
             res.writeHead(200, { "Content-Type": "application/json" })
@@ -24,8 +24,11 @@ const server = http.createServer((req, res) => {
                 body += chunk
             })
             req.on('end', () => {
-                const newUser = JSON.parse(body)
+                let newUser = JSON.parse(body)
                 newUser.id = users.length + 1
+                newUser = {
+                    id: newUser.id, ...newUser
+                }
                 users.push(newUser)
                 res.writeHead(201, { "Content-Type": "application/json" })
                 res.end(JSON.stringify(newUser))
@@ -52,17 +55,40 @@ const server = http.createServer((req, res) => {
                 body += chunk
             })
             req.on('end', () => {
-                const updatedUser = JSON.parse(body)
+                let updatedUser
+                try {
+                    updatedUser = JSON.parse(body)
+                    if (!Object.keys(updatedUser).length) {
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Invalid or empty payload." }));
+                        return;
+                    }
+                } catch (err) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ error: "Malformed JSON payload." }));
+                    return;
+                }
                 const index = users.findIndex(u => u.id == userId)
                 if (index === -1) {
                     // create a new user if not found
-                    updatedUser.id = userId
-                    users.push(updatedUser)
-                    res.writeHead(201, { "Content-Type": "application/json" })
-                    res.end(JSON.stringify(users[updatedUser]))
+                    // updatedUser.id = userId
+                    // users.push(updatedUser)
+                    // res.writeHead(201, { "Content-Type": "application/json" })
+                    // res.end(JSON.stringify(users[updatedUser]))
+
+                    // no such user exists to replace
+                    res.writeHead(404, { "Content-Type": "application/json" })
+                    res.end(JSON.stringify({
+                        userId: userId,
+                        error: "No such user exists to replace."
+                    }))
                 } else {
                     // replace that id matching resource completely
-                    users[index] = updatedUser
+                    updatedUser.id = userId
+                    users[index] = {
+                        id: updatedUser.id,
+                        ...updatedUser
+                    }
                     res.writeHead(200, { "Content-Type": "application/json" })
                     res.end(JSON.stringify(users[index]))
                 }

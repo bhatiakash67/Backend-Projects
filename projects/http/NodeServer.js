@@ -1,5 +1,6 @@
 const http = require('node:http')
 const fs = require('node:fs')
+const PORT = 3000
 
 const server = http.createServer((req, res) => {
     // passing string as response
@@ -16,13 +17,17 @@ const server = http.createServer((req, res) => {
 
     // passing html
     res.writeHead(200, { "Content-Type": "text/html" })
-    fs.createReadStream("./index.html").pipe(res)
+    const name = 'Akash Bhati'
+    let html = fs.readFileSync("./index.html", "utf-8")
+    html = html.replace("{{name}}", name)
+    res.end(html)
+    // fs.createReadStream("./index.html").pipe(res)
 
     // read file before responding, blocking.
     // const html = fs.readFileSync('./index.html', 'utf-8')
     // res.end(html)
 })
 
-server.listen(3000, () => {
-    console.log('Server running on port 3000');
+server.listen(PORT, () => {
+    console.log(`Server running on port http://localhost:${PORT}`);
 })
